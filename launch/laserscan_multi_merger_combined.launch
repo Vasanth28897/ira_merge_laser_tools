@@ -1,0 +1,28 @@
+<!-- DESCRITPION -->
+
+<launch>
+
+	<include ns="lidar0" file="$(find rplidar_ros)/launch/rplidar_s2_combined.launch">
+	  <arg name="serial_port" value="/dev/ttyUSB0"/>
+	</include>
+
+	<include ns="lidar1" file="$(find rplidar_ros)/launch/rplidar_s2_combined.launch">
+	  <arg name="serial_port" value="/dev/ttyUSB1"/>
+	</include> 
+
+	<node pkg="ira_merge_laser_tools" name="laserscan_multi_merger_combined" type="laserscan_multi_merger_combined" output="screen">
+	<!-- <param name="destination_frame" value="cart_frame"/> -->
+	<param name="destination_frame" value="laser"/> # dont have a robot base_link but only two lidars
+	<param name="cloud_destination_topic" value="/merged_cloud"/>
+	<param name="scan_destination_topic" value="/scan_multi"/>
+	<param name="laserscan_topics" value ="/lidar0/scan /lidar1/scan" /> <!-- LIST OF THE LASER SCAN TOPICS TO SUBSCRIBE -->
+	<param name="angle_min" value="-3.141592653589793"/>
+	<param name="angle_max" value="3.141592653589793"/>
+	<param name="angle_increment" value="0.0058"/>
+	<param name="scan_time" value="0.0333333"/>
+	<param name="range_min" value="0.20"/>
+	<param name="range_max" value="50.0"/>
+	</node>
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find ira_merge_laser_tools)/cfg/default.rviz" />
+</launch>
